@@ -145,30 +145,34 @@ class _HomePageState extends State<HomePage>
               ],
             ),
           ),
-          TableCalendar(
-            firstDay: DateTime(2023, 1, 1),
-            lastDay: DateTime(2024, 12, 31),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay; // update `_focusedDay` here as well
-              });
-            },
-            eventLoader: _getEventsForDay,
-            calendarBuilders: CalendarBuilders(
-              markerBuilder: (context, date, events) {
-                if (events.isNotEmpty) {
-                  return Positioned(
-                    bottom: 1,
-                    child: _buildEventsMarker(),
-                  );
-                }
-                return Container();
+          Container(
+            // thêm khoảng trống ở 2 viền màn hình 10px
+            margin: EdgeInsets.all(15),
+            child: TableCalendar(
+              firstDay: DateTime(2023, 1, 1),
+              lastDay: DateTime(2024, 12, 31),
+              focusedDay: _focusedDay,
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDay, day);
               },
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay; // update `_focusedDay` here as well
+                });
+              },
+              eventLoader: _getEventsForDay,
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, date, events) {
+                  if (events.isNotEmpty) {
+                    return Positioned(
+                      bottom: 1,
+                      child: _buildEventsMarker(),
+                    );
+                  }
+                  return Container();
+                },
+              ),
             ),
           ),
           Expanded(
@@ -195,6 +199,7 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+
 
   Widget _buildEventList() {
     final events = _getEventsForDay(_selectedDay!);

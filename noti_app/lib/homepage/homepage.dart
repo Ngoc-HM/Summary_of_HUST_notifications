@@ -94,8 +94,7 @@ class _HomePageState extends State<HomePage>
                   radius: 30,
                   backgroundColor: Colors.grey,
                   child: ClipOval(
-                    child: Image.network(
-                      'https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-6/442417032_2200132937006625_2840452249868358038_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeFePTbNarAIVvJ_zTQlu6JcRDnAhPbjJ9tEOcCE9uMn22OuT7dAb6mLV3FgUq0J2RcgMSV8PogEPBsg8cee8sVj&_nc_ohc=ifY0v8jrOnIQ7kNvgG_MPXt&_nc_ht=scontent.fhan2-5.fna&oh=00_AYANv1ZPS50Wx8FHOznBaNPt0q2xWzyRW5hRocjWheG7tg&oe=666747C6',
+                    child: Image.asset("assets/images/avatar.png",
                       fit: BoxFit.cover,
                       width: 60,
                       height: 60,
@@ -191,12 +190,14 @@ class _HomePageState extends State<HomePage>
         return Card(
           margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: ListTile(
-            leading: Image.network(
+            leading: Image.asset(
               event['title'] == 'eHUST'
-                  ? 'https://via.placeholder.com/50x50.png?text=eHUST'
+                  ? 'assets/images/ehust.png'
                   : event['title'] == 'Teams'
-                  ? 'https://via.placeholder.com/50x50.png?text=Teams'
-                  : 'https://via.placeholder.com/50x50.png?text=Outlook',
+                  ? 'assets/images/teams.png'
+                  : event['title'] == 'QLDT'
+                  ? 'assets/images/hust.png'
+                  : 'assets/images/outlook.png',
               width: 50,
               height: 50,
             ),

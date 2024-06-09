@@ -1,6 +1,7 @@
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomePage extends StatefulWidget {
@@ -48,6 +49,7 @@ class _HomePageState extends State<HomePage>
 
     setState(() {
       _events = events;
+      print("Events loaded: $_events");
     });
   }
 
@@ -69,7 +71,9 @@ class _HomePageState extends State<HomePage>
   }
 
   List<Map<String, String>> _getEventsForDay(DateTime day) {
-    return _events[day] ?? [];
+    DateTime normalizedDay = DateTime(day.year, day.month, day.day);
+    print("Getting events for day: $normalizedDay");
+    return _events[normalizedDay] ?? [];
   }
 
   @override
@@ -85,6 +89,7 @@ class _HomePageState extends State<HomePage>
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                SizedBox(width: 10),
                 CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.grey,
@@ -134,7 +139,6 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           Container(
-            // thêm khoảng trống ở 2 viền màn hình 10px
             margin: EdgeInsets.all(15),
             child: TableCalendar(
               firstDay: DateTime(2023, 1, 1),
@@ -147,6 +151,7 @@ class _HomePageState extends State<HomePage>
                 setState(() {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay; // update `_focusedDay` here as well
+                  print("Selected day: $_selectedDay");
                 });
               },
               eventLoader: _getEventsForDay,
@@ -168,29 +173,14 @@ class _HomePageState extends State<HomePage>
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        selectedItemColor: Colors.orange,
-      ),
+      bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 0, onTap: (index) {},
+    ),
     );
   }
 
-
   Widget _buildEventList() {
     final events = _getEventsForDay(_selectedDay!);
+    print("Events for selected day ($_selectedDay): $events");
     if (events.isEmpty) {
       return Center(child: Text('No events found'));
     }

@@ -30,7 +30,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => setting()),
+          MaterialPageRoute(builder: (context) => Setting()),
         );
         break;
     }

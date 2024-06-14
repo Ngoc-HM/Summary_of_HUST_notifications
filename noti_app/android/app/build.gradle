@@ -27,7 +27,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.noti_app"
-    compileSdk 33
+    compileSdk 34
 
     ndkVersion flutter.ndkVersion
 

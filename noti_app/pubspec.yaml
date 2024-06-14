@@ -13,7 +13,7 @@ dependencies:
   csv: ^6.0.0
   firebase_core: ^3.1.0
   firebase_messaging: ^15.0.1
-
+  flutter_screenutil: ^5.9.3
 
 
 dev_dependencies:
@@ -32,6 +32,13 @@ flutter:
     - assets/data.csv
     - assets/src_images.csv
     - assets/images/
+    - assets/iconapp/
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   # assets:

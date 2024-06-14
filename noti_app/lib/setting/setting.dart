@@ -162,7 +162,12 @@ class _SettingPageState extends State<SettingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Roboto',
+        
+        ),),
         actions: [
           //IconButton(
           //  icon: Icon(Icons.filter_list),

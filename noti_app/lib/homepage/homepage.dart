@@ -80,7 +80,12 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Xin chào ITSS in Japanese(2)'),
+        title: Text('Xin chào ITSS in Japanese(2)', style: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Roboto',
+        
+        ),),
         backgroundColor: Colors.orange,
       ),
       body: Column(

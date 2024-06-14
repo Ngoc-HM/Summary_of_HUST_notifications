@@ -154,7 +154,12 @@ class _NotiPageState extends State<NotiPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Roboto',
+        
+        ),),
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list),

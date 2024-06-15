@@ -30,6 +30,14 @@ class NotiPage extends StatefulWidget {
 
 class _NotiPageState extends State<NotiPage> {
   List<List<dynamic>> _notifications = [];
+  List<List<dynamic>> _filteredNotifications = [];
+
+  DateTime? fromDate;
+  DateTime? toDate;
+  bool showTeams = true;
+  bool showOutlook = true;
+  bool showQLDT = true;
+  bool showEhust = true;
 
   @override
   void initState() {
@@ -42,95 +50,62 @@ class _NotiPageState extends State<NotiPage> {
     final List<List<dynamic>> csvTable = CsvToListConverter().convert(data);
     setState(() {
       _notifications = csvTable;
+      _filteredNotifications = csvTable.sublist(1); // Bỏ qua header
+      _sortNotificationsByDate();
     });
+  }
+
+  void _sortNotificationsByDate() {
+    _filteredNotifications.sort((a, b) {
+      final dateA = _parseDate(a[3]);
+      final dateB = _parseDate(b[3]);
+      return dateB.compareTo(dateA);
+    });
+  }
+
+  DateTime _parseDate(String date) {
+    try {
+      return DateFormat('yyyy-MM-dd').parse(date);
+    } catch (e) {
+      return DateTime(1900); // Invalid date fallback
+    }
   }
 
   void _showFilterDialog() {
     showDialog(
       context: context,
       builder: (context) {
-        DateTime? fromDate;
-        DateTime? toDate;
-        bool showTeams = true;
-        bool showOutlook = true;
-        bool showQLDT = true;
-
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Filter'),
+              title: Text('Lọc Thông Báo'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('From Date:'),
-                      TextButton(
-                        onPressed: () async {
-                          fromDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2100),
-                          );
-                          setState(() {});
-                        },
-                        child: Text(fromDate == null ? 'Select Date' : DateFormat('dd/MM/yyyy').format(fromDate!)),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('To Date:'),
-                      TextButton(
-                        onPressed: () async {
-                          toDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2100),
-                          );
-                          setState(() {});
-                        },
-                        child: Text(toDate == null ? 'Select Date' : DateFormat('dd/MM/yyyy').format(toDate!)),
-                      ),
-                    ],
-                  ),
-                  CheckboxListTile(
-                    title: Text('Teams'),
-                    value: showTeams,
-                    onChanged: (value) {
-                      setState(() {
-                        showTeams = value!;
-                      });
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: Text('Outlook'),
-                    value: showOutlook,
-                    onChanged: (value) {
-                      setState(() {
-                        showOutlook = value!;
-                      });
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: Text('QLDT'),
-                    value: showQLDT,
-                    onChanged: (value) {
-                      setState(() {
-                        showQLDT = value!;
-                      });
-                    },
-                  ),
+                  _buildDateRow('Ngày Bắt Đầu:', fromDate, (date) {
+                    setState(() => fromDate = date);
+                  }),
+                  _buildDateRow('Ngày Kết Thúc:', toDate, (date) {
+                    setState(() => toDate = date);
+                  }),
+                  _buildCheckbox('Teams', showTeams, (value) {
+                    setState(() => showTeams = value!);
+                  }),
+                  _buildCheckbox('Outlook', showOutlook, (value) {
+                    setState(() => showOutlook = value!);
+                  }),
+                  _buildCheckbox('QLDT', showQLDT, (value) {
+                    setState(() => showQLDT = value!);
+                  }),
+                  _buildCheckbox('eHUST', showEhust, (value) {
+                    setState(() => showEhust = value!);
+                  }),
                 ],
               ),
               actions: [
                 TextButton(
                   onPressed: () {
-                    // Apply filters here
+                    _applyFilters();
                     Navigator.of(context).pop();
                   },
                   child: Text('Apply'),
@@ -149,15 +124,58 @@ class _NotiPageState extends State<NotiPage> {
     );
   }
 
+  Row _buildDateRow(String label, DateTime? date, Function(DateTime?) onDateSelected) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label),
+        TextButton(
+          onPressed: () async {
+            final selectedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2020),
+              lastDate: DateTime(2100),
+            );
+            onDateSelected(selectedDate);
+          },
+          child: Text(date == null ? 'Chọn ngày' : DateFormat('dd/MM/yyyy').format(date)),
+        ),
+      ],
+    );
+  }
+
+  CheckboxListTile _buildCheckbox(String title, bool value, Function(bool?) onChanged) {
+    return CheckboxListTile(
+      title: Text(title),
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+
+  void _applyFilters() {
+    setState(() {
+      _filteredNotifications = _notifications.sublist(1).where((notification) {
+        final title = notification[0].toString();
+        final date = _parseDate(notification[3]);
+        bool matchesTitle = (showTeams && title == 'Teams') ||
+            (showOutlook && title == 'Outlook') ||
+            (showQLDT && title == 'QLDT') ||
+            (showEhust && title == 'eHUST');
+        bool matchesDate = (fromDate == null || date.isAfter(fromDate!)) &&
+            (toDate == null || date.isBefore(toDate!));
+        return matchesTitle && matchesDate;
+      }).toList();
+      _sortNotificationsByDate();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: Text(widget.title, style: TextStyle(
-          fontSize: 25,
-        
-        ),),
+        title: Text(widget.title, style: TextStyle(fontSize: 25)),
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list),
@@ -171,28 +189,17 @@ class _NotiPageState extends State<NotiPage> {
           print("Tapped on index $index");
         },
       ),
-      body: _notifications.isEmpty
+      body: _filteredNotifications.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
-        itemCount: _notifications.length,
+        itemCount: _filteredNotifications.length,
         itemBuilder: (context, index) {
-          if (index == 0) {
-            // Skip the header row
-            return Container();
-          }
-          final notification = _notifications[index];
+          final notification = _filteredNotifications[index];
           final title = notification[0];
           final description = notification[1];
           final time = notification[2];
-          DateTime? dateTime;
-          try {
-            dateTime = DateFormat('yyyy-MM-dd').parse(notification[3]);
-          } catch (e) {
-            print("Error parsing date: ${notification[3]}");
-          }
-          final formattedDate = dateTime != null
-              ? DateFormat('dd/MM/yyyy').format(dateTime)
-              : "Invalid date";
+          final date = _parseDate(notification[3]);
+          final formattedDate = DateFormat('dd/MM/yyyy').format(date);
 
           return Card(
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),

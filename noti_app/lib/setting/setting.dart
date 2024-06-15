@@ -52,111 +52,6 @@ class _SettingPageState extends State<SettingPage> {
       _notifications = csvTable;
     });
   }
-
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        DateTime? fromDate;
-        DateTime? toDate;
-        bool showTeams = true;
-        bool showOutlook = true;
-        bool showQLDT = true;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text('Filter'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('From Date:'),
-                      TextButton(
-                        onPressed: () async {
-                          fromDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2100),
-                          );
-                          setState(() {});
-                        },
-                        child: Text(fromDate == null ? 'Select Date' : DateFormat('dd/MM/yyyy').format(fromDate!)),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('To Date:'),
-                      TextButton(
-                        onPressed: () async {
-                          toDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2100),
-                          );
-                          setState(() {});
-                        },
-                        child: Text(toDate == null ? 'Select Date' : DateFormat('dd/MM/yyyy').format(toDate!)),
-                      ),
-                    ],
-                  ),
-                  CheckboxListTile(
-                    title: Text('Teams'),
-                    value: showTeams,
-                    onChanged: (value) {
-                      setState(() {
-                        showTeams = value!;
-                      });
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: Text('Outlook'),
-                    value: showOutlook,
-                    onChanged: (value) {
-                      setState(() {
-                        showOutlook = value!;
-                      });
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: Text('QLDT'),
-                    value: showQLDT,
-                    onChanged: (value) {
-                      setState(() {
-                        showQLDT = value!;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    // Apply filters here
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Apply'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Cancel'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,6 +79,15 @@ class _SettingPageState extends State<SettingPage> {
         child: Column(
           children: [
             Container(
+              child: Text('Bật tắt ứng dụng thông báo', style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Roboto',
+              ),
+              ),
+            ),
+            SizedBox(height: 35),
+            Container(
               width: double.infinity,
               padding: EdgeInsets.all(10),
               height: 80,
@@ -193,6 +97,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
                 child: Row(
                   children: [
+
                     SizedBox(width: 10),
                     _getLeadingIcon('teams_app'),
                     SizedBox(width: 20),

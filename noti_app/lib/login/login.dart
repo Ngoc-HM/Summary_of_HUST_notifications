@@ -92,10 +92,11 @@ class LoginScreen extends StatelessWidget {
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
+
                                     Image.asset(account['image']!),
-                                    SizedBox(height: 10),
-                                    Text(account['name']!),
-                                    Text('Login thất bại.'),
+                                    SizedBox(height: 20),
+                                    Text(account['name']!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+                                    Text('Login thất bại.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                                 actions: [

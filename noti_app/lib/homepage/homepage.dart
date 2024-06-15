@@ -89,9 +89,10 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Xin chào ITSS in Japanese(2)', style: TextStyle(
+        title: Text('Hello ITSS in 日本語(2)', style: TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
+          color: Colors.white,
         )),
         backgroundColor: Colors.orange,
       ),
@@ -130,7 +131,7 @@ class _HomePageState extends State<HomePage>
                       isNotificationOn
                           ? Icons.notifications_active
                           : Icons.notifications_off,
-                      color: isNotificationOn ? Colors.green : Colors.red,
+                      color: isNotificationOn ? Colors.orange : Colors.red,
                     ),
                     Switch(
                       value: isNotificationOn,

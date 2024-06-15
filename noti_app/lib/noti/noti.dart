@@ -156,8 +156,6 @@ class _NotiPageState extends State<NotiPage> {
         backgroundColor: Colors.orange,
         title: Text(widget.title, style: TextStyle(
           fontSize: 25,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Roboto',
         
         ),),
         actions: [

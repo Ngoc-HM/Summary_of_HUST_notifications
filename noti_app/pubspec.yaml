@@ -33,12 +33,7 @@ flutter:
     - assets/src_images.csv
     - assets/images/
     - assets/iconapp/
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Bold.ttf
-          weight: 700
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

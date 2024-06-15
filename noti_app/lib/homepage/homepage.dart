@@ -33,6 +33,9 @@ class _HomePageState extends State<HomePage>
     final List<List<dynamic>> csvTable = CsvToListConverter().convert(data);
 
     Map<DateTime, List<Map<String, String>>> events = {};
+    if (data != null) 
+      print("CSV doc thanh cong");
+
     for (var i = 1; i < csvTable.length; i++) {
       DateTime date = DateTime.parse(csvTable[i][3]);
       Map<String, String> event = {
@@ -83,7 +86,6 @@ class _HomePageState extends State<HomePage>
         title: Text('Xin chào ITSS in Japanese(2)', style: TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
-          fontFamily: 'Roboto',
         
         ),),
         backgroundColor: Colors.orange,

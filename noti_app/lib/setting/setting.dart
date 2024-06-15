@@ -139,6 +139,7 @@ class _SettingPageState extends State<SettingPage> {
             value: value,
             onChanged: onChanged,
           ),
+          SizedBox(width: 10)
         ],
       ),
     );

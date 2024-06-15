@@ -1,6 +1,7 @@
-import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -123,27 +124,24 @@ class _HomePageState extends State<HomePage>
                   ],
                 ),
                 Spacer(),
-                GestureDetector(
-                  onTap: _toggleNotification,
-                  child: Stack(
-                    children: [
-                      Icon(
-                        Icons.notifications,
-                        size: 40,
-                        color: Colors.orange,
-                      ),
-                      if (!isNotificationOn)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Icon(
-                            Icons.do_not_disturb,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                        ),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    Icon(
+                      isNotificationOn
+                          ? Icons.notifications_active
+                          : Icons.notifications_off,
+                      color: isNotificationOn ? Colors.green : Colors.red,
+                    ),
+                    Switch(
+                      value: isNotificationOn,
+                      onChanged: (value) {
+                        setState(() {
+                          isNotificationOn = value;
+                        });
+                      },
+                      activeColor: Colors.orange,
+                    ),
+                  ],
                 ),
               ],
             ),

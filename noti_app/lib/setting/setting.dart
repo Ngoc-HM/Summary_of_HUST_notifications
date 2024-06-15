@@ -34,9 +34,10 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   List<List<dynamic>> _notifications = [];
-  bool isSwitchedTeams = false;
-  bool isSwitchedOutlook = false;
-  bool isSwitchedQLDT = false;
+  bool isSwitchedTeams = true;
+  bool isSwitchedOutlook = true;
+  bool isSwitchedQLDT = true;
+  bool isSwitchedeHUST = true;
 
 
   @override
@@ -60,13 +61,8 @@ class _SettingPageState extends State<SettingPage> {
         title: Text(widget.title, style: TextStyle(
           fontSize: 25,
         
-        ),),
-        actions: [
-          //IconButton(
-          //  icon: Icon(Icons.filter_list),
-          //  onPressed: _showFilterDialog,
-          //),
-        ],
+        ),
+        ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: 2,
@@ -163,7 +159,7 @@ class _SettingPageState extends State<SettingPage> {
                 child: Row(
                   children: [
                     SizedBox(width: 10),
-                    _getLeadingIcon('eHUST'),
+                    _getLeadingIcon('QLDT'),
                     SizedBox(width: 20),
                     Text('Quản lý đào tạo', style: TextStyle(
                       fontSize: 20,
@@ -182,6 +178,37 @@ class _SettingPageState extends State<SettingPage> {
                   ],
                 ),
               ),
+            SizedBox(height: 15),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(10),
+              height: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Color.fromARGB(255, 218, 214, 198),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(width: 10),
+                  _getLeadingIcon('eHUST'),
+                  SizedBox(width: 20),
+                  Text('eHUST', style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Roboto',
+                  ),),
+                  SizedBox(width: 150),
+                  Switch(
+                    value: isSwitchedeHUST,
+                    onChanged: (value) {
+                      setState(() {
+                        isSwitchedeHUST = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
           ]
         ),
       ),

@@ -1,9 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
 
@@ -23,7 +20,6 @@ class Setting extends StatelessWidget {
   }
 }
 
-
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key, required this.title});
   final String title;
@@ -38,7 +34,6 @@ class _SettingPageState extends State<SettingPage> {
   bool isSwitchedOutlook = true;
   bool isSwitchedQLDT = true;
   bool isSwitchedeHUST = true;
-  String space15box = "15";
 
   @override
   void initState() {
@@ -53,15 +48,17 @@ class _SettingPageState extends State<SettingPage> {
       _notifications = csvTable;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: Text(widget.title, style: TextStyle(
-          fontSize: 25,
-        
-        ),
+        title: Text(
+          widget.title,
+          style: TextStyle(
+            fontSize: 25,
+          ),
         ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
@@ -75,145 +72,76 @@ class _SettingPageState extends State<SettingPage> {
         child: Column(
           children: [
             Container(
-              child: Text('Bật tắt ứng dụng thông báo', style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Roboto',
-              ),
+              child: Text(
+                'Bật tắt ứng dụng thông báo',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Roboto',
+                ),
               ),
             ),
             SizedBox(height: 35),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(10),
-              height: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Color.fromARGB(255, 218, 214, 198),
-              ),
-                child: Row(
-                  children: [
-
-                    SizedBox(width: 10),
-                    _getLeadingIcon('teams_app'),
-                    SizedBox(width: 20),
-                    Text('Teams', style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto',
-                    ),
-                    ),
-                    SizedBox(width: 150),
-                    Switch(
-                      value: isSwitchedTeams,
-                      onChanged: (value) {
-                        setState(() {
-                          isSwitchedTeams = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(10),
-              height: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Color.fromARGB(255, 218, 214, 198),
-              ),
-                child: Row(
-                  children: [
-                    SizedBox(width: 10),
-                    _getLeadingIcon('Outlook'),
-                    SizedBox(width: 20),
-                    Text('Outlook', style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto',
-                    ),
-                    ),
-                    SizedBox(width: 140),
-                    Switch(
-                      value: isSwitchedOutlook,
-                      onChanged: (value) {
-                        setState(() {
-                          isSwitchedOutlook = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(10),
-              height: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Color.fromARGB(255, 218, 214, 198),
-              ),
-                child: Row(
-                  children: [
-                    SizedBox(width: 10),
-                    _getLeadingIcon('QLDT'),
-                    SizedBox(width: 20),
-                    Text('Quản lý đào tạo', style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto',
-                    ),),
-                    SizedBox(width: 70),
-                    Switch(
-                      value: isSwitchedQLDT,
-                      onChanged: (value) {
-                        setState(() {
-                          isSwitchedQLDT = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
+            _buildSwitchRow('teams_app', 'Teams', isSwitchedTeams, (value) {
+              setState(() {
+                isSwitchedTeams = value;
+              });
+            }),
             SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(10),
-              height: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Color.fromARGB(255, 218, 214, 198),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(width: 10),
-                  _getLeadingIcon('eHUST'),
-                  SizedBox(width: 20),
-                  Text('eHUST', style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Roboto',
-                  ),),
-                  SizedBox(width: 150),
-                  Switch(
-                    value: isSwitchedeHUST,
-                    onChanged: (value) {
-                      setState(() {
-                        isSwitchedeHUST = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ]
+            _buildSwitchRow('Outlook', 'Outlook', isSwitchedOutlook, (value) {
+              setState(() {
+                isSwitchedOutlook = value;
+              });
+            }),
+            SizedBox(height: 20),
+            _buildSwitchRow('QLDT', 'Quản lý đào tạo', isSwitchedQLDT, (value) {
+              setState(() {
+                isSwitchedQLDT = value;
+              });
+            }),
+            SizedBox(height: 20),
+            _buildSwitchRow('eHUST', 'eHUST', isSwitchedeHUST, (value) {
+              setState(() {
+                isSwitchedeHUST = value;
+              });
+            }),
+          ],
         ),
       ),
     );
   }
+
+  Widget _buildSwitchRow(String icon, String text, bool value, Function(bool) onChanged) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(10),
+      height: 80,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Color.fromARGB(255, 218, 214, 198),
+      ),
+      child: Row(
+        children: [
+          SizedBox(width: 10),
+          _getLeadingIcon(icon),
+          SizedBox(width: 20),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Roboto',
+              ),
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _getLeadingIcon(String title) {
@@ -228,10 +156,8 @@ class _SettingPageState extends State<SettingPage> {
         return Image.asset("assets/images/hust.png", width: 50, height: 50);
       case 'teams_app':
         return Image.asset("assets/images/teams.png", width: 50, height: 50);
-      //case 'teams_app':
-      //  return Image.asset("assets/iconapp/teams_app.png", width: 50, height: 50);
       default:
         return Icon(Icons.notifications);
     }
   }
-
+}

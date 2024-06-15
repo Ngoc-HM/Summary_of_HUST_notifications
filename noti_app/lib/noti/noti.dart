@@ -205,13 +205,13 @@ class _NotiPageState extends State<NotiPage> {
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: ListTile(
               leading: _getLeadingIcon(title),
-              title: Text(title),
+              title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               subtitle: Text(description),
               trailing: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(formattedDate),
-                  Text(time),
+                  Text(formattedDate, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(time, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ],
               ),
             ),

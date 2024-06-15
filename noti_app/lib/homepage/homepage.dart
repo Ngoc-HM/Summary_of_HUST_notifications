@@ -33,8 +33,8 @@ class _HomePageState extends State<HomePage>
     final List<List<dynamic>> csvTable = CsvToListConverter().convert(data);
 
     Map<DateTime, List<Map<String, String>>> events = {};
-    if (data != null) 
-      print("CSV doc thanh cong");
+    if (data != null)
+      print("CSV load thành công");
 
     for (var i = 1; i < csvTable.length; i++) {
       DateTime date = DateTime.parse(csvTable[i][3]);
@@ -49,6 +49,11 @@ class _HomePageState extends State<HomePage>
         events[date]?.add(event);
       }
     }
+
+    // Sắp xếp các sự kiện theo thời gian
+    events.forEach((key, value) {
+      value.sort((a, b) => a['time']!.compareTo(b['time']!));
+    });
 
     setState(() {
       _events = events;
@@ -86,8 +91,7 @@ class _HomePageState extends State<HomePage>
         title: Text('Xin chào ITSS in Japanese(2)', style: TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
-        
-        ),),
+        )),
         backgroundColor: Colors.orange,
       ),
       body: Column(
@@ -179,8 +183,7 @@ class _HomePageState extends State<HomePage>
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 0, onTap: (index) {},
-    ),
+      bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 0, onTap: (index) {}),
     );
   }
 

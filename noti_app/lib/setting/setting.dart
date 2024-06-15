@@ -38,7 +38,7 @@ class _SettingPageState extends State<SettingPage> {
   bool isSwitchedOutlook = true;
   bool isSwitchedQLDT = true;
   bool isSwitchedeHUST = true;
-
+  String space15box = "15";
 
   @override
   void initState() {
@@ -115,7 +115,7 @@ class _SettingPageState extends State<SettingPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 20),
               Container(
               width: double.infinity,
               padding: EdgeInsets.all(10),
@@ -147,7 +147,7 @@ class _SettingPageState extends State<SettingPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 20),
               Container(
               width: double.infinity,
               padding: EdgeInsets.all(10),
@@ -178,7 +178,7 @@ class _SettingPageState extends State<SettingPage> {
                   ],
                 ),
               ),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(10),

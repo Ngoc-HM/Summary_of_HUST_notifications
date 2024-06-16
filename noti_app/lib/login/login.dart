@@ -44,7 +44,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Select an Account',
+                'Chọn tài khoản của bạn',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -83,14 +83,14 @@ class LoginScreen extends StatelessWidget {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: Text('Login Failed'),
+                                title: Text('Đăng Nhập Thất Bại', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Image.asset(account['image']!),
                                     SizedBox(height: 20),
                                     Text(account['name']!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
-                                    Text('Login thất bại.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                    //Text('Login thất bại.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                                 actions: [

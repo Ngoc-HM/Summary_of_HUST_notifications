@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
 
 class Setting extends StatelessWidget {

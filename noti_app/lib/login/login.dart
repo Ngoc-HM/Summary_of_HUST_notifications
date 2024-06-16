@@ -1,24 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:noti_app/homepage/homepage.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: LoginScreen(),
-    );
-  }
-}
+import 'package:noti_app/homepage/homepage.dart'; // Cần thay thế với đường dẫn đúng nếu bạn có màn hình khác
 
 class LoginScreen extends StatelessWidget {
   final List<Map<String, String>> accounts = [
@@ -81,7 +62,21 @@ class LoginScreen extends StatelessWidget {
                         if (account['username'] == validUsername) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => HomePage()),
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) => HomePage(), // Thay thế HomePage bằng màn hình của bạn
+                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              },
+                            ),
                           );
                         } else {
                           showDialog(
@@ -92,7 +87,6 @@ class LoginScreen extends StatelessWidget {
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-
                                     Image.asset(account['image']!),
                                     SizedBox(height: 20),
                                     Text(account['name']!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
@@ -143,4 +137,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-

@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:noti_app/firebase_api.dart';
 import 'package:noti_app/login/login.dart';
 import 'firebase_options.dart';
 

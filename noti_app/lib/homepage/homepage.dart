@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage>
 
   List<Map<String, String>> _getEventsForDay(DateTime day) {
     DateTime normalizedDay = DateTime(day.year, day.month, day.day);
-    print("Getting events for day: $normalizedDay");
+    //print("Getting events for day: $normalizedDay");
     return _events[normalizedDay] ?? [];
   }
 

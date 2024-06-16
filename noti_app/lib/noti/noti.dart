@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Noti extends StatelessWidget {
   const Noti({super.key});
@@ -43,7 +44,18 @@ class _NotiPageState extends State<NotiPage> {
   @override
   void initState() {
     super.initState();
+    _loadPreferences();
     _loadData();
+  }
+
+  Future<void> _loadPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      showTeams = prefs.getBool('showTeams') ?? true;
+      showOutlook = prefs.getBool('showOutlook') ?? true;
+      showQLDT = prefs.getBool('showQLDT') ?? true;
+      showEhust = prefs.getBool('showEhust') ?? true;
+    });
   }
 
   void _loadData() {
@@ -70,7 +82,7 @@ class _NotiPageState extends State<NotiPage> {
         setState(() {
           _notifications = loadedItems.where((item) => item.isNotEmpty).toList();
           _filteredNotifications = _notifications;
-          _sortNotificationsByDate();
+          _applyFilters(); // Áp dụng bộ lọc sau khi tải dữ liệu
         });
       } else if (data is Map) {
         final List<Map<dynamic, dynamic>> loadedItems = [];
@@ -83,9 +95,26 @@ class _NotiPageState extends State<NotiPage> {
         setState(() {
           _notifications = loadedItems;
           _filteredNotifications = loadedItems;
-          _sortNotificationsByDate();
+          _applyFilters(); // Áp dụng bộ lọc sau khi tải dữ liệu
         });
       }
+    });
+  }
+
+  void _applyFilters() {
+    setState(() {
+      _filteredNotifications = _notifications.where((notification) {
+        final title = notification['title'].toString();
+        final date = _parseDate(notification['datetime']);
+        bool matchesTitle = (showTeams && title == 'Teams') ||
+            (showOutlook && title == 'Outlook') ||
+            (showQLDT && title == 'QLDT') ||
+            (showEhust && title == 'eHUST');
+        bool matchesDate = (fromDate == null || date.isAfter(fromDate!)) &&
+            (toDate == null || date.isBefore(toDate!));
+        return matchesTitle && matchesDate;
+      }).toList();
+      _sortNotificationsByDate();
     });
   }
 
@@ -188,23 +217,6 @@ class _NotiPageState extends State<NotiPage> {
       value: value,
       onChanged: onChanged,
     );
-  }
-
-  void _applyFilters() {
-    setState(() {
-      _filteredNotifications = _notifications.where((notification) {
-        final title = notification['title'].toString();
-        final date = _parseDate(notification['datetime']);
-        bool matchesTitle = (showTeams && title == 'Teams') ||
-            (showOutlook && title == 'Outlook') ||
-            (showQLDT && title == 'QLDT') ||
-            (showEhust && title == 'eHUST');
-        bool matchesDate = (fromDate == null || date.isAfter(fromDate!)) &&
-            (toDate == null || date.isBefore(toDate!));
-        return matchesTitle && matchesDate;
-      }).toList();
-      _sortNotificationsByDate();
-    });
   }
 
   @override

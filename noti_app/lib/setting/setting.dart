@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
 
 class Setting extends StatelessWidget {
@@ -38,6 +39,25 @@ class _SettingPageState extends State<SettingPage> {
   void initState() {
     super.initState();
     _loadCSV();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isSwitchedTeams = prefs.getBool('showTeams') ?? true;
+      isSwitchedOutlook = prefs.getBool('showOutlook') ?? true;
+      isSwitchedQLDT = prefs.getBool('showQLDT') ?? true;
+      isSwitchedeHUST = prefs.getBool('showEhust') ?? true;
+    });
+  }
+
+  Future<void> _savePreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('showTeams', isSwitchedTeams);
+    prefs.setBool('showOutlook', isSwitchedOutlook);
+    prefs.setBool('showQLDT', isSwitchedQLDT);
+    prefs.setBool('showEhust', isSwitchedeHUST);
   }
 
   Future<void> _loadCSV() async {
@@ -81,27 +101,31 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ),
             SizedBox(height: 35),
-            _buildSwitchRow('teams_app', 'Teams', isSwitchedTeams, (value) {
+            _buildSwitchRow('Teams', isSwitchedTeams, (value) {
               setState(() {
                 isSwitchedTeams = value;
+                _savePreferences();
               });
             }),
             SizedBox(height: 20),
-            _buildSwitchRow('Outlook', 'Outlook', isSwitchedOutlook, (value) {
+            _buildSwitchRow('Outlook', isSwitchedOutlook, (value) {
               setState(() {
                 isSwitchedOutlook = value;
+                _savePreferences();
               });
             }),
             SizedBox(height: 20),
-            _buildSwitchRow('QLDT', 'Quản lý đào tạo', isSwitchedQLDT, (value) {
+            _buildSwitchRow('QLDT', isSwitchedQLDT, (value) {
               setState(() {
                 isSwitchedQLDT = value;
+                _savePreferences();
               });
             }),
             SizedBox(height: 20),
-            _buildSwitchRow('eHUST', 'eHUST', isSwitchedeHUST, (value) {
+            _buildSwitchRow('eHUST', isSwitchedeHUST, (value) {
               setState(() {
                 isSwitchedeHUST = value;
+                _savePreferences();
               });
             }),
           ],
@@ -110,7 +134,7 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Widget _buildSwitchRow(String icon, String text, bool value, Function(bool) onChanged) {
+  Widget _buildSwitchRow(String text, bool value, Function(bool) onChanged) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(10),
@@ -122,7 +146,7 @@ class _SettingPageState extends State<SettingPage> {
       child: Row(
         children: [
           SizedBox(width: 10),
-          _getLeadingIcon(icon),
+          _getLeadingIcon(text),
           SizedBox(width: 20),
           Expanded(
             child: Text(
@@ -154,8 +178,6 @@ class _SettingPageState extends State<SettingPage> {
         return Image.asset("assets/images/outlook.png", width: 50, height: 50);
       case 'QLDT':
         return Image.asset("assets/images/hust.png", width: 50, height: 50);
-      case 'teams_app':
-        return Image.asset("assets/images/teams.png", width: 50, height: 50);
       default:
         return Icon(Icons.notifications);
     }

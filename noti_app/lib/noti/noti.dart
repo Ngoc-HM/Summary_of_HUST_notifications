@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:csv/csv.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Noti extends StatelessWidget {
   const Noti({super.key});
@@ -29,8 +29,8 @@ class NotiPage extends StatefulWidget {
 }
 
 class _NotiPageState extends State<NotiPage> {
-  List<List<dynamic>> _notifications = [];
-  List<List<dynamic>> _filteredNotifications = [];
+  List<Map<dynamic, dynamic>> _notifications = [];
+  List<Map<dynamic, dynamic>> _filteredNotifications = [];
 
   DateTime? fromDate;
   DateTime? toDate;
@@ -39,36 +39,104 @@ class _NotiPageState extends State<NotiPage> {
   bool showQLDT = true;
   bool showEhust = true;
 
+  final databaseRef = FirebaseDatabase.instance.ref().child('data');
+
   @override
   void initState() {
     super.initState();
-    _loadCSV();
+    _loadPreferences();
+    _loadData();
   }
 
-  Future<void> _loadCSV() async {
-    final data = await rootBundle.loadString('assets/data.csv');
-    final List<List<dynamic>> csvTable = CsvToListConverter().convert(data);
+  Future<void> _loadPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _notifications = csvTable;
-      _filteredNotifications = csvTable.sublist(1); // Bỏ qua header
+      showTeams = prefs.getBool('showTeams') ?? true;
+      showOutlook = prefs.getBool('showOutlook') ?? true;
+      showQLDT = prefs.getBool('showQLDT') ?? true;
+      showEhust = prefs.getBool('showEhust') ?? true;
+    });
+  }
+
+  void _loadData() {
+    databaseRef.onValue.listen((event) {
+      final data = event.snapshot.value;
+      print(data); // Print data to check
+
+      if (data is List) {
+        final List<Map<dynamic, dynamic>> loadedItems = data.map((item) {
+          if (item is List && item.length >= 4) {
+            return {
+              'title': item[0],
+              'description': item[1],
+              'time': item[2],
+              'datetime': item[3]
+            };
+          } else if (item is Map) {
+            return Map<dynamic, dynamic>.from(item);
+          } else {
+            return <dynamic, dynamic>{}; // Unknown case
+          }
+        }).toList();
+
+        setState(() {
+          _notifications = loadedItems.where((item) => item.isNotEmpty).toList();
+          _filteredNotifications = _notifications;
+          _applyFilters(); // Apply filters after loading data
+        });
+      } else if (data is Map) {
+        final List<Map<dynamic, dynamic>> loadedItems = [];
+        data.forEach((key, value) {
+          if (value is Map) {
+            loadedItems.add(Map<dynamic, dynamic>.from(value));
+          }
+        });
+
+        setState(() {
+          _notifications = loadedItems;
+          _filteredNotifications = loadedItems;
+          _applyFilters(); // Apply filters after loading data
+        });
+      }
+    });
+  }
+
+  void _applyFilters() {
+    setState(() {
+      _filteredNotifications = _notifications.where((notification) {
+        final title = notification['title'].toString();
+        final date = _parseDateTime(notification['datetime'], notification['time']);
+        bool matchesTitle = (showTeams && title == 'Teams') ||
+            (showOutlook && title == 'Outlook') ||
+            (showQLDT && title == 'QLDT') ||
+            (showEhust && title == 'eHUST');
+        bool matchesDate = (fromDate == null || !date.isBefore(fromDate!)) &&
+            (toDate == null || !date.isAfter(toDate!.add(const Duration(days: 1)).subtract(const Duration(milliseconds: 1))));
+        return matchesTitle && matchesDate;
+      }).toList();
       _sortNotificationsByDate();
     });
   }
 
   void _sortNotificationsByDate() {
     _filteredNotifications.sort((a, b) {
-      final dateA = _parseDate(a[3]);
-      final dateB = _parseDate(b[3]);
-      return dateB.compareTo(dateA);
+      final dateTimeA = _parseDateTime(a['datetime'], a['time']);
+      final dateTimeB = _parseDateTime(b['datetime'], b['time']);
+      return dateTimeB.compareTo(dateTimeA);
     });
   }
 
-  DateTime _parseDate(String date) {
+  DateTime _parseDateTime(String? date, String? time) {
     try {
-      return DateFormat('yyyy-MM-dd').parse(date);
+      if (date != null && time != null) {
+        return DateFormat('yyyy-MM-dd HH:mm').parse('$date $time');
+      } else if (date != null) {
+        return DateFormat('yyyy-MM-dd').parse(date);
+      }
     } catch (e) {
-      return DateTime(1900); // Invalid date fallback
+      // Handle parsing error
     }
+    return DateTime(1900); // Invalid date fallback
   }
 
   void _showFilterDialog() {
@@ -153,23 +221,6 @@ class _NotiPageState extends State<NotiPage> {
     );
   }
 
-  void _applyFilters() {
-    setState(() {
-      _filteredNotifications = _notifications.sublist(1).where((notification) {
-        final title = notification[0].toString();
-        final date = _parseDate(notification[3]);
-        bool matchesTitle = (showTeams && title == 'Teams') ||
-            (showOutlook && title == 'Outlook') ||
-            (showQLDT && title == 'QLDT') ||
-            (showEhust && title == 'eHUST');
-        bool matchesDate = (fromDate == null || date.isAfter(fromDate!)) &&
-            (toDate == null || date.isBefore(toDate!));
-        return matchesTitle && matchesDate;
-      }).toList();
-      _sortNotificationsByDate();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,11 +246,12 @@ class _NotiPageState extends State<NotiPage> {
         itemCount: _filteredNotifications.length,
         itemBuilder: (context, index) {
           final notification = _filteredNotifications[index];
-          final title = notification[0];
-          final description = notification[1];
-          final time = notification[2];
-          final date = _parseDate(notification[3]);
+          final title = notification['title'] ?? '';
+          final description = notification['description'] ?? '';
+          final time = notification['time'] ?? '';
+          final date = _parseDateTime(notification['datetime'], time);
           final formattedDate = DateFormat('dd/MM/yyyy').format(date);
+          final formattedTime = DateFormat('HH:mm').format(date);
 
           return Card(
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -211,7 +263,7 @@ class _NotiPageState extends State<NotiPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(formattedDate, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text(time, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(formattedTime, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ],
               ),
             ),

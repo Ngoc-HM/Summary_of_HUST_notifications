@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -16,6 +17,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Map<DateTime, List<Map<String, String>>> _events = {};
 
   bool isNotificationOn = true;
+  bool showTeams = true;
+  bool showOutlook = true;
+  bool showQLDT = true;
+  bool showEhust = true;
   late AnimationController _animationController;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -29,9 +34,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     _selectedDay = _focusedDay;
 
+    _loadPreferences();
+
     if (isNotificationOn) {
       _startListeningToFirebase();
     }
+  }
+
+  Future<void> _loadPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      showTeams = prefs.getBool('showTeams') ?? true;
+      showOutlook = prefs.getBool('showOutlook') ?? true;
+      showQLDT = prefs.getBool('showQLDT') ?? true;
+      showEhust = prefs.getBool('showEhust') ?? true;
+    });
   }
 
   void _startListeningToFirebase() {
@@ -68,6 +85,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       if (item['datetime'] == null || item['title'] == null || item['description'] == null || item['time'] == null) {
         continue;
       }
+
+      // Filter based on settings
+      if ((item['title'] == 'Teams' && !showTeams) ||
+          (item['title'] == 'Outlook' && !showOutlook) ||
+          (item['title'] == 'QLDT' && !showQLDT) ||
+          (item['title'] == 'eHUST' && !showEhust)) {
+        continue;
+      }
+
       DateTime date = DateTime.parse(item['datetime']);
       Map<String, String> event = {
         'title': item['title'] ?? '',

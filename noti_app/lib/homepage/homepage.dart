@@ -142,7 +142,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ],
             ),
           ),
-          Container(
+          isNotificationOn
+              ? Container(
             margin: EdgeInsets.all(15),
             child: TableCalendar(
               firstDay: DateTime(2023, 1, 1),
@@ -158,8 +159,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 return items.isNotEmpty ? Positioned(bottom: 1, child: _buildEventsMarker()) : Container();
               }),
             ),
-          ),
-          Expanded(child: _buildEventList()),
+          )
+              : Center(child: Text('Notifications are turned off.')),
+          isNotificationOn ? Expanded(child: _buildEventList()) : Container(),
         ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 0, onTap: (index) {}),

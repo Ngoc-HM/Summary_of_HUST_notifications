@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:noti_app/bottom_navigator/bottom_navigator.dart';
@@ -18,13 +20,24 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  StreamSubscription<DatabaseEvent>? _dataSubscription;
+
   @override
   void initState() {
     super.initState();
 
-    databaseRef.onValue.listen((event) {
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _selectedDay = _focusedDay;
+
+    if (isNotificationOn) {
+      _startListeningToFirebase();
+    }
+  }
+
+  void _startListeningToFirebase() {
+    _dataSubscription = databaseRef.onValue.listen((event) {
       final data = event.snapshot.value;
-      print(data); // In dữ liệu ra để kiểm tra
+      print(data); // Print data to check
       if (data is Map) {
         final List<Map<dynamic, dynamic>> loadedItems = [];
         data.forEach((key, value) {
@@ -42,15 +55,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         });
       }
     });
+  }
 
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    _selectedDay = _focusedDay;
+  void _stopListeningToFirebase() {
+    _dataSubscription?.cancel();
   }
 
   void _convertItemsToEvents() {
     Map<DateTime, List<Map<String, String>>> events = {};
     for (var item in items) {
-      // Kiểm tra và xử lý giá trị null
+      // Check and handle null values
       if (item['datetime'] == null || item['title'] == null || item['description'] == null || item['time'] == null) {
         continue;
       }
@@ -70,13 +84,20 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   void dispose() {
     _animationController.dispose();
+    _stopListeningToFirebase();
     super.dispose();
   }
 
   void _toggleNotification() {
     setState(() {
       isNotificationOn = !isNotificationOn;
-      isNotificationOn ? _animationController.reverse() : _animationController.forward();
+      if (isNotificationOn) {
+        _startListeningToFirebase();
+        _animationController.reverse();
+      } else {
+        _stopListeningToFirebase();
+        _animationController.forward();
+      }
     });
   }
 
@@ -154,7 +175,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       itemCount: items.length,
       itemBuilder: (context, index) {
         var event = items[index];
-        print("data ${event['title']}"); // In dữ liệu ra để kiểm tra
+        print("data ${event['title']}"); // Print data to check
         return Card(
           margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: ListTile(

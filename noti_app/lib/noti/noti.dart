@@ -61,7 +61,7 @@ class _NotiPageState extends State<NotiPage> {
   void _loadData() {
     databaseRef.onValue.listen((event) {
       final data = event.snapshot.value;
-      print(data); // In dữ liệu ra để kiểm tra
+      print(data); // Print data to check
 
       if (data is List) {
         final List<Map<dynamic, dynamic>> loadedItems = data.map((item) {
@@ -75,14 +75,14 @@ class _NotiPageState extends State<NotiPage> {
           } else if (item is Map) {
             return Map<dynamic, dynamic>.from(item);
           } else {
-            return <dynamic, dynamic>{}; // Trường hợp không xác định
+            return <dynamic, dynamic>{}; // Unknown case
           }
         }).toList();
 
         setState(() {
           _notifications = loadedItems.where((item) => item.isNotEmpty).toList();
           _filteredNotifications = _notifications;
-          _applyFilters(); // Áp dụng bộ lọc sau khi tải dữ liệu
+          _applyFilters(); // Apply filters after loading data
         });
       } else if (data is Map) {
         final List<Map<dynamic, dynamic>> loadedItems = [];
@@ -95,7 +95,7 @@ class _NotiPageState extends State<NotiPage> {
         setState(() {
           _notifications = loadedItems;
           _filteredNotifications = loadedItems;
-          _applyFilters(); // Áp dụng bộ lọc sau khi tải dữ liệu
+          _applyFilters(); // Apply filters after loading data
         });
       }
     });
@@ -110,8 +110,8 @@ class _NotiPageState extends State<NotiPage> {
             (showOutlook && title == 'Outlook') ||
             (showQLDT && title == 'QLDT') ||
             (showEhust && title == 'eHUST');
-        bool matchesDate = (fromDate == null || date.isAfter(fromDate!)) &&
-            (toDate == null || date.isBefore(toDate!));
+        bool matchesDate = (fromDate == null || !date.isBefore(fromDate!)) &&
+            (toDate == null || !date.isAfter(toDate!.add(const Duration(days: 1)).subtract(const Duration(milliseconds: 1))));
         return matchesTitle && matchesDate;
       }).toList();
       _sortNotificationsByDate();
@@ -138,7 +138,6 @@ class _NotiPageState extends State<NotiPage> {
     }
     return DateTime(1900); // Invalid date fallback
   }
-
 
   void _showFilterDialog() {
     showDialog(

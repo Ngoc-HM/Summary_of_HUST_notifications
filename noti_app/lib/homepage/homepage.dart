@@ -80,6 +80,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   void _convertItemsToEvents() {
     Map<DateTime, List<Map<String, String>>> events = {};
+
+    // Sort items by datetime and time
+    items.sort((a, b) {
+      DateTime aDateTime = DateTime.parse(a['datetime'] + ' ' + a['time']);
+      DateTime bDateTime = DateTime.parse(b['datetime'] + ' ' + b['time']);
+      return aDateTime.compareTo(bDateTime);
+    });
+
     for (var item in items) {
       // Check and handle null values
       if (item['datetime'] == null || item['title'] == null || item['description'] == null || item['time'] == null) {
@@ -181,12 +189,22 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 _focusedDay = focusedDay;
               }),
               eventLoader: _getEventsForDay,
-              calendarBuilders: CalendarBuilders(markerBuilder: (context, date, items) {
-                return items.isNotEmpty ? Positioned(bottom: 1, child: _buildEventsMarker()) : Container();
-              }),
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, date, items) {
+                  return items.isNotEmpty ? Positioned(bottom: 1, child: _buildEventsMarker()) : Container();
+                },
+              ),
+              headerStyle: HeaderStyle(
+                formatButtonVisible: false,
+              ),
             ),
           )
-              : Center(child: Text('Notifications are turned off.')),
+              : Center(
+            child: Text(
+              'Notifications are turned off.',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
           isNotificationOn ? Expanded(child: _buildEventList()) : Container(),
         ],
       ),

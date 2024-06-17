@@ -12,7 +12,7 @@ class Setting extends StatelessWidget {
     return MaterialApp(
       title: 'Setting App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orangeAccent),
         useMaterial3: true,
       ),
       home: const SettingPage(title: 'Ứng Dụng'),

@@ -105,7 +105,7 @@ class _NotiPageState extends State<NotiPage> {
     setState(() {
       _filteredNotifications = _notifications.where((notification) {
         final title = notification['title'].toString();
-        final date = _parseDate(notification['datetime']);
+        final date = _parseDateTime(notification['datetime'], notification['time']);
         bool matchesTitle = (showTeams && title == 'Teams') ||
             (showOutlook && title == 'Outlook') ||
             (showQLDT && title == 'QLDT') ||
@@ -120,22 +120,25 @@ class _NotiPageState extends State<NotiPage> {
 
   void _sortNotificationsByDate() {
     _filteredNotifications.sort((a, b) {
-      final dateA = _parseDate(a['datetime']);
-      final dateB = _parseDate(b['datetime']);
-      return dateB.compareTo(dateA);
+      final dateTimeA = _parseDateTime(a['datetime'], a['time']);
+      final dateTimeB = _parseDateTime(b['datetime'], b['time']);
+      return dateTimeB.compareTo(dateTimeA);
     });
   }
 
-  DateTime _parseDate(String? date) {
+  DateTime _parseDateTime(String? date, String? time) {
     try {
-      if (date != null) {
+      if (date != null && time != null) {
+        return DateFormat('yyyy-MM-dd HH:mm').parse('$date $time');
+      } else if (date != null) {
         return DateFormat('yyyy-MM-dd').parse(date);
       }
     } catch (e) {
-      // Xử lý lỗi khi chuyển đổi ngày
+      // Handle parsing error
     }
     return DateTime(1900); // Invalid date fallback
   }
+
 
   void _showFilterDialog() {
     showDialog(
@@ -247,8 +250,9 @@ class _NotiPageState extends State<NotiPage> {
           final title = notification['title'] ?? '';
           final description = notification['description'] ?? '';
           final time = notification['time'] ?? '';
-          final date = _parseDate(notification['datetime']);
+          final date = _parseDateTime(notification['datetime'], time);
           final formattedDate = DateFormat('dd/MM/yyyy').format(date);
+          final formattedTime = DateFormat('HH:mm').format(date);
 
           return Card(
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -260,7 +264,7 @@ class _NotiPageState extends State<NotiPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(formattedDate, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text(time, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(formattedTime, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ],
               ),
             ),
